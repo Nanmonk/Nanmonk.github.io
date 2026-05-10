@@ -1,0 +1,13 @@
+baseURL = 'https://Nanmonk.github.io/'
+locale = 'zh-cn'
+title = "Nanmonk's Blog"
+theme = "archie"
+paginate = 10
+
+[params]
+  mode = "auto"
+  useCDN = false
+  subtitle = ""
+
+[markup.highlight]
+  noClasses = false
