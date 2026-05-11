@@ -1,4 +1,4 @@
-baseURL = 'https://Nanmonk.github.io/'
+baseURL = 'https://nanmonk.github.io/'
 locale = 'zh-cn'
 title = "Nanmonk's Blog"
 theme = "archie"

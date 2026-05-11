@@ -28,8 +28,9 @@ jobs:
           extended: true
 
       - uses: actions/configure-pages@v5
+        id: pages
 
-      - run: hugo --minify
+      - run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url }}"
 
       - uses: actions/upload-pages-artifact@v3
         with:
