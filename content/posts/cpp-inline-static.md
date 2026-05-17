@@ -25,7 +25,7 @@ int main() {
 
 未开启优化时编译，可以看到 `num_check` 是正常的函数调用（`call num_check(int)`）：
 
-![](https://github.com/Nanmonk/Nanmonk.github.io/blob/main/assets/593692100-12467e52-378b-4a70-86c6-d718ef9cb072.png)
+![](https://raw.githubusercontent.com/Nanmonk/Nanmonk.github.io/main/assets/593692100-12467e52-378b-4a70-86c6-d718ef9cb072.png)
 
 ```asm
 .LC0:
@@ -82,7 +82,7 @@ main:
 
 开启 `-O1` 后编译器会自动将函数内联展开，消除函数调用开销：
 
-![](https://github.com/Nanmonk/Nanmonk.github.io/blob/main/assets/593692126-5d5e8c23-c275-4961-ab34-594902a11cb9.png)
+![](https://raw.githubusercontent.com/Nanmonk/Nanmonk.github.io/main/assets/593692126-5d5e8c23-c275-4961-ab34-594902a11cb9.png)
 
 如果需要在 `-O0` 下（例如调试构建中的热路径）也强制内联，可以使用 `[[gnu::always_inline]]` 或 `__attribute__((always_inline))`：
 
