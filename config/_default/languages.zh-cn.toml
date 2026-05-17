@@ -1,0 +1,7 @@
+locale = 'zh-cn'
+label = '中文'
+weight = 1
+title = "Nanmonk's Blog"
+
+[params]
+  description = ""

@@ -1,0 +1,36 @@
+colorScheme = 'blowfish'
+defaultAppearance = 'auto'
+autoSwitchAppearance = true
+
+enableSearch = true
+enableCodeCopy = true
+showScrollToTop = true
+
+[homepage]
+  layout = 'profile'
+  showRecent = true
+  showRecentItems = 6
+
+[article]
+  showDate = true
+  showReadingTime = true
+  showTableOfContents = true
+  showTaxonomies = true
+  showWordCount = false
+  showComments = false
+  sharingLinks = []
+
+[list]
+  showBreadcrumbs = false
+  showTableOfContents = false
+  showSummary = true
+  groupByYear = true
+
+[taxonomy]
+  showTermCount = true
+
+[author]
+  name = "Nanmonk"
+
+[[author.links]]
+  github = "https://github.com/Nanmonk"

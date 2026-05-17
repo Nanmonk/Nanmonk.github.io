@@ -1,0 +1,11 @@
+baseURL = 'https://blog.nanmonk.site/'
+defaultContentLanguage = 'zh-cn'
+enableRobotsTXT = true
+paginate = 10
+theme = 'blowfish'
+
+[markup.goldmark.extensions]
+  alerts = true
+
+[markup.highlight]
+  noClasses = false
