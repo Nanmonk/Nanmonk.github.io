@@ -40,5 +40,8 @@ buildExpired = false
     url = "/tags/"
     weight = 2
 
+[markup.goldmark.extensions]
+  alerts = true
+
 [markup.highlight]
   noClasses = false

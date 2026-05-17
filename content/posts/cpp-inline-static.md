@@ -8,11 +8,24 @@ tags = ['C++']
 # inline
 [inline cppreference](https://zh.cppreference.com/w/cpp/language/inline)
 
-## 重定义
+## 内联展开
 
-举例：
+以下面这段代码为例：
 
-![](https://img2024.cnblogs.com/blog/3391146/202504/3391146-20250401135424512-1189673066.png)
+```cpp
+const char* num_check(int v) {
+    return (v % 2 > 0) ? "奇" : "偶";
+}
+
+int main() {
+    for (int i = 0; i <= 99; i++)
+        printf("%02d %s\n", i, num_check(i));
+}
+```
+
+未开启优化时编译，可以看到 `num_check` 是正常的函数调用（`call num_check(int)`）：
+
+![](https://private-user-images.githubusercontent.com/277991389/593692100-12467e52-378b-4a70-86c6-d718ef9cb072.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzkwMTg0OTIsIm5iZiI6MTc3OTAxODE5MiwicGF0aCI6Ii8yNzc5OTEzODkvNTkzNjkyMTAwLTEyNDY3ZTUyLTM3OGItNGE3MC04NmM2LWQ3MThlZjljYjA3Mi5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNTE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDUxN1QxMTQzMTJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT05NTFjOTE4NjVkYWQxMTM4Y2E0NjY0OGMxODhkYTg1MzY5OTg0ZjkyMjI2ZjdiZjA3MmRlZjZiNGRjNDRjOGNiJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.7YMPghJw5HB91oM_l3iOjyimbtXxv8UsRw3JbDxN0z8)
 
 ```asm
 .LC0:
@@ -67,9 +80,11 @@ main:
         ret
 ```
 
-可以明显发现，此时是正常的函数调用，那如何才能内联优化呢？
+开启 `-O1` 后编译器会自动将函数内联展开，消除函数调用开销：
 
-可以在函数前使用 `[[gnu::always_inline]]` 或者 `__attribute__((always_inline))`，比如
+![](https://private-user-images.githubusercontent.com/277991389/593692126-5d5e8c23-c275-4961-ab34-594902a11cb9.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NzkwMTg0OTIsIm5iZiI6MTc3OTAxODE5MiwicGF0aCI6Ii8yNzc5OTEzODkvNTkzNjkyMTI2LTVkNWU4YzIzLWMyNzUtNDk2MS1hYjM0LTU5NDkwMmExMWNiOS5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYwNTE3JTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MDUxN1QxMTQzMTJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1iMmFkODQ0ZTFhNmQ3ZjNjY2ZhYjIzY2MwYjcxZmIzNmIxNzAxY2QyNjkxZDY0NGU3OTJkOGE3ZWEwZDIwYTkyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.innnKckIw4ZHq2wI8jWLy4PeB2Z7PpODzAro5Y-o58w)
+
+如果需要在 `-O0` 下（例如调试构建中的热路径）也强制内联，可以使用 `[[gnu::always_inline]]` 或 `__attribute__((always_inline))`：
 
 ```cpp
 [[gnu::always_inline]] inline const char* num_check(int v) {
@@ -77,11 +92,20 @@ main:
 }
 ```
 
-其实只要设置编译优化 `-O1` 就会自动优化。
-
-![](https://img2024.cnblogs.com/blog/3391146/202504/3391146-20250401135438367-34701593.png)
+> [!NOTE]
+> 通常情况下让编译器决定（开 `-O1` 及以上）是更好的选择。`always_inline` 适用于必须控制内联行为的特殊场景，滥用可能导致代码体积膨胀。
 
 ## 内联 const 变量默认拥有外部链接
+
+普通的 `const` 变量在命名空间作用域下默认是**内部链接**（相当于隐式 `static`），而加了 `inline` 之后则拥有**外部链接**，可以在多个翻译单元中共享同一份定义：
+
+```cpp
+// constants.h
+inline const int kMaxSize = 1024; // 外部链接，多个 .cpp 包含也不会重复定义
+const int kOther = 42;            // 内部链接，每个 .cpp 各有一份副本
+```
+
+这让头文件中定义全局常量成为可能，而不需要 `extern` 声明 + `.cpp` 定义的分离写法。
 
 ## 类成员函数与模板函数默认 inline
 
@@ -100,13 +124,25 @@ template<typename T>
 T square(T x) { return x * x; } // 默认 inline
 ```
 
+这也是为什么模板定义通常放在头文件里——多个翻译单元包含同一份定义不会触发 ODR 违规。
+
 # static
 
-让被修饰内容仅在当前翻译单元（Translation Unit）可见。
+`static` 修饰命名空间作用域的函数或变量时，让其仅在**当前翻译单元**（Translation Unit）可见，即内部链接。
 
-[ODR](https://zh.cppreference.com/w/cpp/language/definition)
+```cpp
+// a.cpp
+static void foo() {}  // 仅 a.cpp 可见
 
-# Other
+// b.cpp
+static void foo() {}  // 与 a.cpp 的 foo 互不干扰，不违反 ODR
+```
 
-> **Note**
-> 头文件可以使用 `#pragma once`，虽然被很多编译器支持，但这并不是标准的内容。
+这与 `inline` 的"允许多重定义"不同：`static` 是"每个翻译单元各有一份独立定义"，`inline` 是"多个翻译单元共享同一份定义"。
+
+[ODR cppreference](https://zh.cppreference.com/w/cpp/language/definition)
+
+# 头文件保护
+
+> [!NOTE]
+> 头文件可以使用 `#pragma once` 代替传统的 include guard，虽然被大多数主流编译器支持，但它不属于 C++ 标准，移植性上需留意。
